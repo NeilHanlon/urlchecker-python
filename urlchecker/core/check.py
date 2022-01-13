@@ -139,6 +139,7 @@ class UrlChecker:
         exclude_urls=None,
         retry_count=2,
         timeout=5,
+        check_type='get'
     ):
         """
         Run the url checker given a path, excluded patterns for urls/files
@@ -173,7 +174,7 @@ class UrlChecker:
             )
 
             # Check the urls
-            checker.check_urls(retry_count=retry_count, timeout=timeout)
+            checker.check_urls(retry_count=retry_count, timeout=timeout, check_type=check_type)
 
             # Update flattened results
             self.results["failed"].update(checker.failed)

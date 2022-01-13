@@ -148,6 +148,15 @@ def get_parser():
         default=5,
     )
 
+    # Request manipulation
+
+    check.add_argument(
+        "--check-type",
+        help="what type of check to run with the requests library (defaults to GET)",
+        type=str,
+        default='GET',
+    )
+
     return parser
 
 

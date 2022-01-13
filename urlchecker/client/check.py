@@ -71,6 +71,7 @@ def main(args, extra):
     print("             retry count: %s" % args.retry_count)
     print("                    save: %s" % args.save)
     print("                 timeout: %s" % args.timeout)
+    print("              check_type: %s" % args.check_type)
 
     # Instantiate a new checker with provided arguments
     checker = UrlChecker(
@@ -85,6 +86,7 @@ def main(args, extra):
         exclude_patterns=exclude_patterns,
         retry_count=args.retry_count,
         timeout=args.timeout,
+        check_type=args.check_type,
     )
 
     # save results to file, if save indicated

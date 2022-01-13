@@ -38,7 +38,12 @@ def check_response_status_code(url, response):
         print_success(url)
         return False
 
-    # Case 3: failure of some kind
+    # Case 3: consider 301s a success! Retry is not needed.
+    if response.status_code in (301,302):
+        print_success(url)
+        return False
+
+    # Case 4: failure of some kind
     print_failure(url)
     return True
 
@@ -146,7 +151,7 @@ class UrlCheckResult:
         # collect all links from file (unique=True is set)
         self.urls = fileproc.collect_links_from_file(self.file_name)
 
-    def check_urls(self, urls=None, retry_count=1, timeout=5):
+    def check_urls(self, urls=None, retry_count=1, timeout=5, check_type='get'):
         """
         Check urls extracted from a certain file and print the checks results.
 
@@ -183,6 +188,13 @@ class UrlCheckResult:
         user_agent = get_user_agent()
         headers = {"User-Agent": user_agent}
 
+
+        method = check_type.lower()
+        if method == 'get':
+            _request = requests.get
+        elif method == 'head':
+            _request = requests.head
+
         # check links
         for url in [url for url in urls if "http" in url]:
 
@@ -204,7 +216,7 @@ class UrlCheckResult:
             while rcount > 0 and do_retry:
                 response = None
                 try:
-                    response = requests.get(url, timeout=pause, headers=headers)
+                    response = _request(url, timeout=pause, headers=headers)
 
                 except requests.exceptions.Timeout as e:
                     print(e)
@@ -222,7 +234,11 @@ class UrlCheckResult:
                 do_retry = check_response_status_code(url, response)
 
                 # If we try again, pause for retry seconds and update retry seconds
-                if rcount > 0 and do_retry:
+                if (rcount > 0 and do_retry):
+                    # switch to a get request if a head failed for any reason
+                    if method == 'head':
+                        print("Switching to GET request on retry")
+                        _request = requests.get
                     # keep this only for debugging
                     # print("Retry n° %s for %s, with timeout of %s seconds." % (retry_count - rcount, url, pause))
                     time.sleep(retry_seconds)

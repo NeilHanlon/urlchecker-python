@@ -12,6 +12,7 @@ import configparser
 @pytest.mark.parametrize("force_pass", [False, True])
 @pytest.mark.parametrize("rcount", [1, 3])
 @pytest.mark.parametrize("timeout", [3, 5])
+@pytest.mark.parametrize("check_type", ['get', 'put'])
 def test_client_general(config_fname, cleanup, print_all, verbose,
                         force_pass, rcount, timeout):
 
@@ -43,6 +44,8 @@ def test_client_general(config_fname, cleanup, print_all, verbose,
         str(rcount),
         "--timeout",
         str(timeout),
+        "--check-type",
+        str(check_type),
     ]
 
     # Add boolean arguments
